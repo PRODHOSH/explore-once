@@ -14,6 +14,11 @@ me.json: {"Full name": "Ada Lovelace", "Email": "ada@example.com", "Country": "U
           "Plan": "Pro", "Subscribe to newsletter": true, "Resume": "/path/cv.pdf"}
 Keys are matched to fields by label / placeholder / aria-label / name (fuzzy, unique 1:1).
 
+Developer / recruitment forms: use --list-fields to see every question (with character limits),
+draft answers from the person's profile (profile.py), and let the review phase lint long answers
+(em dashes, stock phrases, numbers not in the profile, over-limit text). Submit is blocked while
+the lint is dirty unless --allow-lint is passed.
+
 Never fills password, card, CVV or SSN-like fields: it reports them so the person enters them.
 Handles single-page forms. Multi-step wizards: run once per step with --no-submit-check.
 Exit codes: 0 ok, 2 setup/approval problem, 3 step failed, 4 needs a human.
@@ -30,6 +35,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from flowkit import emit, human, looks_like_login, session, setup_error, step  # noqa: E402
+from lint_answer import lint, load_facts  # noqa: E402
 
 COLLECT_JS = """() => {
   const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e);
@@ -53,7 +59,8 @@ COLLECT_JS = """() => {
     out.push({idx: i, tag: el.tagName.toLowerCase(), type, name: el.name || '', id: el.id || '',
               ac: el.getAttribute('autocomplete') || '', labels: labels(el), group: lg ? lg.innerText.trim() : '',
               options: el.tagName === 'SELECT' ? Array.from(el.options).map(o => o.text.trim()) : [],
-              required: el.required || el.getAttribute('aria-required') === 'true', value: el.value || '', checked: !!el.checked});
+              required: el.required || el.getAttribute('aria-required') === 'true', value: el.value || '', checked: !!el.checked,
+              maxlength: el.maxLength > 0 ? el.maxLength : 0});
     i++;
   }
   return out;
@@ -107,13 +114,13 @@ def build_fields(raw: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             members = groups[gk]
             descs = [m["group"] for m in members if m["group"]] + [f["name"]]
             fields.append({"kind": f["type"] + "-group", "members": members, "descs": descs,
-                           "required": any(m["required"] for m in members), "label": (members[0]["group"] or f["name"])})
+                           "required": any(m["required"] for m in members), "label": (members[0]["group"] or f["name"]), "maxlength": 0})
         else:
             descs = f["labels"] + [f["name"], f["id"]]
             if f["group"]:
                 descs.append(f["group"])
             fields.append({"kind": f["type"] if f["tag"] == "input" else f["tag"], "members": [f], "descs": descs,
-                           "required": f["required"], "label": (f["labels"] or [f["name"] or f["id"] or f["type"]])[0]})
+                           "required": f["required"], "label": (f["labels"] or [f["name"] or f["id"] or f["type"]])[0], "maxlength": f["maxlength"]})
     return fields
 
 
@@ -173,6 +180,24 @@ def apply_value(page: Any, key: str, field: Dict[str, Any], value: Any) -> str:
     loc(m).fill(str(value)); return str(value)
 
 
+def list_fields(page: Any) -> List[Dict[str, Any]]:
+    """What the form asks, in order: so answers can be drafted before anything is filled."""
+    out = []
+    for f in build_fields(page.evaluate(COLLECT_JS)):
+        m = f["members"][0]
+        row: Dict[str, Any] = {"question": f["label"], "kind": f["kind"], "required": f["required"]}
+        if f["maxlength"]:
+            row["maxlength"] = f["maxlength"]
+        if f["kind"] == "select":
+            row["options"] = m["options"][:25]
+        if f["kind"].endswith("-group"):
+            row["options"] = [(x["labels"] or [x["value"]])[0] for x in f["members"]]
+        if is_sensitive(f):
+            row["for_the_person_to_enter"] = True
+        out.append(row)
+    return out
+
+
 def find_submit(page: Any, selector: Optional[str]) -> Optional[Tuple[Any, str]]:
     cands = [page.locator(selector)] if selector else [
         page.locator("button[type=submit]"), page.locator("input[type=submit]"),
@@ -196,27 +221,53 @@ def fill_everything(page: Any, data: Dict[str, Any]) -> Dict[str, Any]:
             refused.append(key); continue
         try:
             shown = apply_value(page, key, field, data[key])
-            filled.append({"key": key, "field": field["label"], "value": shown})
+            filled.append({"key": key, "field": field["label"], "value": shown, "maxlength": field["maxlength"]})
         except Exception as exc:  # noqa: BLE001
             errors.append({"key": key, "field": field["label"], "error": str(exc).splitlines()[0][:200]})
+    facts = load_facts()
+    lint_problems = []
+    for item in filled:
+        text = item["value"]
+        if item["field"] and len(text) > 60:  # open-ended answers: check tone, numbers and length
+            found = lint(text, facts, [], item["maxlength"])
+            if found:
+                lint_problems.append({"key": item["key"], "problems": found})
+        elif item["maxlength"] and len(text) > item["maxlength"]:
+            lint_problems.append({"key": item["key"], "problems": [f"{len(text)} characters, limit is {item['maxlength']}"]})
     missing_required = [f["label"] for f in fields if f["required"] and id(f) not in matched_ids]
     sensitive_unfilled = [f["label"] for f in fields if is_sensitive(f)]
     return {"filled": filled, "errors": errors, "unmatched_keys": unmatched, "refused_sensitive": refused,
-            "required_not_provided": missing_required, "sensitive_fields_for_you": sensitive_unfilled}
+            "required_not_provided": missing_required, "sensitive_fields_for_you": sensitive_unfilled,
+            "answer_lint": lint_problems}
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--url", required=True)
-    ap.add_argument("--data", required=True, help="JSON file: {field label: value}")
+    ap.add_argument("--data", help="JSON file: {field label: value}")
     ap.add_argument("--out", default="./form-out")
     ap.add_argument("--submit", metavar="CODE", help="approval code printed by the review phase")
     ap.add_argument("--submit-selector", help="CSS selector of the submit button if auto-detection is wrong")
+    ap.add_argument("--list-fields", action="store_true", help="print the form's questions (with character limits) and exit; --data is not needed")
+    ap.add_argument("--allow-lint", action="store_true", help="submit even if the answer lint found problems (tell the person)")
     ap.add_argument("--allow-missing", action="store_true", help="submit even if required fields were not provided")
     ap.add_argument("--keep-open", action="store_true")
     args = ap.parse_args()
 
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
+    if args.list_fields:
+        with session(keep_open=args.keep_open) as page:
+            with step(page, "open form", out):
+                page.goto(args.url, wait_until="domcontentloaded", timeout=45_000)
+                page.wait_for_timeout(800)
+                if looks_like_login(page):
+                    human("Login required. Run `flowkit.py start <url>`, sign in, then re-run.")
+            with step(page, "list fields", out):
+                fields = list_fields(page)
+        emit({"ok": True, "url": args.url, "fields": fields})
+        return
+    if not args.data:
+        setup_error("--data is required (or use --list-fields)")
     try:
         data = json.loads(Path(args.data).read_text(encoding="utf-8"))
         assert isinstance(data, dict) and data
@@ -249,6 +300,9 @@ def main() -> None:
             emit({"ok": True, "phase": "review", "submitted": False, **review, "next": "Show the person review.png and the lists; submit only with their go-ahead: re-run with --submit " + code})
             return
 
+        if report["answer_lint"] and not args.allow_lint:
+            emit({"ok": False, "phase": "submit", "submitted": False, "reason": "answers failed the writing check; rewrite them and review again", "answer_lint": report["answer_lint"]})
+            sys.exit(3)
         if (report["errors"] or (report["required_not_provided"] and not args.allow_missing)):
             emit({"ok": False, "phase": "submit", "submitted": False, "reason": "form not fully fillable; see lists", **report})
             sys.exit(3)
