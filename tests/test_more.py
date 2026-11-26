@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 S = ROOT / "skills"
 TMP = Path(tempfile.mkdtemp(prefix="proskills-test2-"))
-ENV = {**os.environ, "PRO_SKILLS_HOME": str(TMP / "home"), "PRO_SKILLS_CDP_PORT": "9334"}
+ENV = {**os.environ, "EXPLORE_ONCE_HOME": str(TMP / "home"), "EXPLORE_ONCE_CDP_PORT": "9334"}
 SITE = TMP / "site"; SITE.mkdir()
 fails = []
 
@@ -33,6 +33,7 @@ FORM = """<html><head><title>Apply</title></head><body><h1>Apply</h1>
  <label><input type="radio" name="plan" value="pro"> Pro</label></fieldset>
 <label><input type="checkbox" name="news"> Subscribe to newsletter</label>
 <label for="m">Message</label><textarea id="m" name="message"></textarea>
+<label for="w">Why should we hire you?</label><textarea id="w" name="why" maxlength="400"></textarea>
 <label for="p">Password</label><input id="p" type="password" name="pw">
 <label for="t">Referral code *</label><input id="t" name="ref" required>
 <button type="submit">Apply now</button></form><div id="res"></div></body></html>"""
@@ -95,6 +96,67 @@ def main() -> int:
     p = run([ff, "--url", f"{base}/form.html", "--data", data, "--out", TMP / "f5", "--submit", code2])
     r = last_json(p)
     check("submit with valid code works", p.returncode == 0 and r.get("submitted") and "Thanks Ada Lovelace" in r.get("page_text_start", ""), p.stdout + p.stderr)
+
+    # ---------------- profile store + answer linter + developer-form flow
+    prof = S / "form-filler/scripts/profile.py"
+    lnt = S / "form-filler/scripts/lint_answer.py"
+    check("profile init creates file", run([prof, "init"]).returncode == 0 and (Path(ENV["EXPLORE_ONCE_HOME"]) / "profile/profile.json").exists())
+    mode = oct((Path(ENV["EXPLORE_ONCE_HOME"]) / "profile/profile.json").stat().st_mode & 0o777)
+    check("profile file is owner-only (600)", mode == "0o600", mode)
+    check("profile init does not overwrite", "untouched" in run([prof, "init"]).stdout)
+    run([prof, "set", "basics.full_name", "Ada Lovelace"])
+    run([prof, "set", "basics.phone", "9876543210"])
+    check("set keeps phone digits as typed", run([prof, "get", "basics.phone"]).stdout.strip() == "9876543210")
+    run([prof, "add", "projects", json.dumps({"name": "Mess Tracker", "one_line": "tap in attendance for a hostel mess",
+         "what_i_built": "a small web app where students tap in", "stack": ["Flask"], "metrics": [{"text": "40 students tried it", "source": "my hostel"}]})])
+    run([prof, "add", "voice.samples", json.dumps("I like small tools that people use every day.")])
+    check("add appends to nested list", "small tools" in run([prof, "show", "voice"]).stdout)
+    miss = json.loads(run([prof, "missing"]).stdout)["missing"]
+    check("missing lists empty common fields", "basics.email" in miss and "basics.full_name" not in miss, str(miss))
+    facts = run([prof, "facts"]).stdout
+    check("facts digest includes the project", "Mess Tracker" in facts and "Flask" in facts)
+    run([prof, "save-answer", "--q", "Why should we hire you?", "--a", "Because I build things.", "--tags", "why-hire,general"])
+    check("find-answers recalls approved answer", "Because I build things." in run([prof, "find-answers", "why hire"]).stdout)
+
+    def lint_text(t, *extra):
+        pr = run([lnt, "--text", t, *extra]); return pr.returncode, json.loads(pr.stdout)
+    rc, j = lint_text("I built Mess Tracker for my hostel, and 40 students tried it. The slow phones were the hard part.")
+    check("lint passes a plain true answer (number is in profile)", rc == 0 and j["ok"], str(j))
+    rc, j = lint_text("I built an app used by 500 students.")
+    check("lint flags a number not in the profile", rc == 3 and any("500" in x for x in j["problems"]), str(j))
+    rc, j = lint_text("I built it \u2014 and it worked.")
+    check("lint flags em dash", any("dash" in x for x in j["problems"]), str(j))
+    rc, j = lint_text("I built it and it worked!")
+    check("lint flags exclamation mark", any("exclamation" in x for x in j["problems"]), str(j))
+    rc, j = lint_text("I am passionate about leveraging robust tools.")
+    check("lint flags stock phrases", sum("stock phrase" in x for x in j["problems"]) >= 3, str(j))
+    rc, j = lint_text("**Bold** claims\n- bullet")
+    check("lint flags markdown", any("markdown" in x for x in j["problems"]), str(j))
+    rc, j = lint_text("A fairly ordinary sentence about my work.", "--max-chars", "10")
+    check("lint enforces max chars", any("limit" in x for x in j["problems"]), str(j))
+    rc, j = lint_text("The 2026 batch at Acme is where I applied.", "--allow", "2026", "--allow", "Acme")
+    check("lint --allow whitelists form facts", rc == 0, str(j))
+
+    p = run([ff, "--url", f"{base}/form.html", "--list-fields", "--out", TMP / "lf"])
+    fl = last_json(p).get("fields", [])
+    why = [f for f in fl if f["question"].startswith("Why should")]
+    check("--list-fields shows question with maxlength", p.returncode == 0 and why and why[0].get("maxlength") == 400, p.stdout[:300])
+    check("--list-fields marks password for the person", any(f.get("for_the_person_to_enter") for f in fl), str(fl))
+
+    dirty = {**json.loads(data.read_text()), "Why should we hire you": "I built Mess Tracker \u2014 and 500 students loved it, which shows I am passionate!"}
+    (TMP / "dirty.json").write_text(json.dumps(dirty))
+    p = run([ff, "--url", f"{base}/form.html", "--data", TMP / "dirty.json", "--out", TMP / "d1"])
+    r = last_json(p)
+    check("review reports lint problems for the long answer", r.get("answer_lint") and r["answer_lint"][0]["key"] == "Why should we hire you", str(r.get("answer_lint")))
+    p2 = run([ff, "--url", f"{base}/form.html", "--data", TMP / "dirty.json", "--out", TMP / "d2", "--submit", r["approval_code"]])
+    check("submit blocked while answers fail the writing check", p2.returncode == 3 and "writing check" in p2.stdout and last_json(p2).get("submitted") is False, p2.stdout[:300])
+    clean = {**json.loads(data.read_text()), "Why should we hire you": "I built Mess Tracker for my hostel, and 40 students tried it. The slow phones taught me to keep pages light."}
+    (TMP / "clean.json").write_text(json.dumps(clean))
+    p = run([ff, "--url", f"{base}/form.html", "--data", TMP / "clean.json", "--out", TMP / "c1"])
+    r = last_json(p)
+    check("clean answer: no lint problems in review", not r.get("answer_lint"), str(r.get("answer_lint")))
+    p = run([ff, "--url", f"{base}/form.html", "--data", TMP / "clean.json", "--out", TMP / "c2", "--submit", r["approval_code"]])
+    check("clean answer submits", p.returncode == 0 and last_json(p).get("submitted") is True, p.stdout[:300])
 
     # ---------------- ui-regression-suite
     rs = S / "ui-regression-suite/scripts/run_suite.py"

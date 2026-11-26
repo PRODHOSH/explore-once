@@ -2,7 +2,7 @@
 """End-to-end smoke tests against LOCAL fixtures only (no real websites, no logins).
 
 Run:  python3 tests/test_e2e.py        (needs: playwright, pillow, Chrome)
-Uses an isolated PRO_SKILLS_HOME and port so it never touches your real automation profile.
+Uses an isolated EXPLORE_ONCE_HOME and port so it never touches your real automation profile.
 Covers: flowkit chrome launch + attach, the flow template, the failure-bundle contract
 (exit 3), the login guard (exit 4), the flow library, gallery-harvest end to end, and the
 image-generation flow against a fake chat page.
@@ -23,7 +23,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 TMP = Path(tempfile.mkdtemp(prefix="proskills-test-"))
 PORT = "9333"
-ENV = {**os.environ, "PRO_SKILLS_HOME": str(TMP / "home"), "PRO_SKILLS_CDP_PORT": PORT}
+ENV = {**os.environ, "EXPLORE_ONCE_HOME": str(TMP / "home"), "EXPLORE_ONCE_CDP_PORT": PORT}
 FIX = TMP / "site"
 FIX.mkdir()
 fails = []
@@ -116,7 +116,7 @@ def main() -> int:
     run([flows, "add", flow, "--name", "t", "--desc", "test flow", "--params", "url"])
     lst = run([flows, "list"]).stdout
     check("flows list shows flow", "test flow" in lst, lst)
-    lib = Path(ENV["PRO_SKILLS_HOME"]) / "flows"  # flows.py add must bring flowkit.py along
+    lib = Path(ENV["EXPLORE_ONCE_HOME"]) / "flows"  # flows.py add must bring flowkit.py along
     p = run([flows, "run", "t", "--", "--url", f"{base}/h1.html", "--out-dir", work / "o4", "--headless"])
     check("flows run executes and records ok", p.returncode == 0 and '"ok": 1' in (lib / "manifest.json").read_text(), p.stdout + p.stderr)
 
