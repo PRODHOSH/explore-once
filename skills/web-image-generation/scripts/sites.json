@@ -1,0 +1,19 @@
+{
+  "_comment": "Ordered fallback lists. First visible match wins. Selectors on live sites drift: when a step fails, run generate_image.py --inspect, fix the lists here, and bump verified.",
+  "chatgpt": {
+    "url": "https://chatgpt.com/",
+    "prompt_prefix": "Generate an image: ",
+    "input": ["#prompt-textarea", "div[contenteditable='true'][role='textbox']", "textarea"],
+    "send": ["button[data-testid='send-button']", "button[aria-label*='Send' i]"],
+    "stop": ["button[data-testid='stop-button']", "button[aria-label*='Stop' i]"],
+    "verified": "never (written without live access; run --inspect on first use)"
+  },
+  "gemini": {
+    "url": "https://gemini.google.com/app",
+    "prompt_prefix": "Generate an image: ",
+    "input": ["rich-textarea .ql-editor", "div[role='textbox']", "textarea"],
+    "send": ["button[aria-label*='Send' i]", "button.send-button"],
+    "stop": ["button[aria-label*='Stop' i]"],
+    "verified": "never (written without live access; run --inspect on first use)"
+  }
+}
