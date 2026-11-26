@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.svg" alt="explore-once: Claude explores a site one time, Python replays it" width="100%">
+  <img src="docs/banner.png" alt="explore-once: Claude explores a site one time, Python replays it" width="100%">
 </p>
 
 <p align="center">
