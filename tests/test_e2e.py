@@ -145,6 +145,12 @@ def main() -> int:
     check("image flow ok and saved a png", p.returncode == 0 and files and files[0]["file"].endswith(".png") and files[0]["bytes"] > 1000, p.stdout + p.stderr)
 
     run([ROOT / "shared/flowkit.py", "stop"])
+    import time
+    for _ in range(20):  # Chrome needs a moment to exit
+        if not last_json(run([ROOT / "shared/flowkit.py", "status"])).get("running"):
+            break
+        time.sleep(0.5)
+    check("flowkit stop quits the automation Chrome", not last_json(run([ROOT / "shared/flowkit.py", "status"])).get("running"))
     server.shutdown()
     print(f"\n{len(fails)} failure(s)" if fails else "\nall passed")
     return 1 if fails else 0

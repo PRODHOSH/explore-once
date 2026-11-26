@@ -138,7 +138,7 @@ def stop_chrome() -> bool:
     """Quit the automation Chrome (posix only). Returns True if a kill was attempted."""
     if platform.system() == "Windows":
         return False
-    subprocess.run(["pkill", "-f", f"--user-data-dir={PROFILE_DIR}"], check=False)
+    subprocess.run(["pkill", "-f", f"user-data-dir={PROFILE_DIR}"], check=False)  # no leading dashes: pkill would read them as options
     return True
 
 
