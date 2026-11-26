@@ -1,0 +1,33 @@
+name: Skill idea
+description: Suggest a new skill or an improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does it solve?
+      description: Describe a real task you or someone you know repeats in a browser.
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: How is it done today, and what does it cost?
+      description: For example "Claude opens 80 pages one by one and uses a lot of tokens".
+  - type: textarea
+    id: idea
+    attributes:
+      label: What should the skill do?
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: If it sends, submits, posts, pays or deletes anything, it can stop for human approval first.
+        - label: It does not need passwords, payment details or CAPTCHA solving.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Can you help?
+      options:
+        - label: I would like to build this myself.

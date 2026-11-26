@@ -1,0 +1,53 @@
+name: Bug report
+description: Something did not work as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. The more exact you are, the faster this gets fixed.
+        Please remove anything private (names, emails, account details) from what you paste.
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Which skill?
+      options:
+        - browser-script-compiler
+        - web-image-generation
+        - gallery-harvest
+        - form-filler
+        - ui-regression-suite
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you ask for, and what did you get instead?
+    validations:
+      required: true
+  - type: input
+    id: exit-code
+    attributes:
+      label: Exit code
+      description: "0 ok, 2 setup, 3 step failed, 4 needs a human"
+      placeholder: "3"
+  - type: textarea
+    id: json
+    attributes:
+      label: The JSON line the script printed
+      render: json
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+  - type: input
+    id: env
+    attributes:
+      label: Your setup
+      description: Operating system, Chrome version, Python version
+      placeholder: "macOS 15, Chrome 140, Python 3.12"

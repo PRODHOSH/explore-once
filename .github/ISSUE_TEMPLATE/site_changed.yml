@@ -1,0 +1,38 @@
+name: Site changed
+description: A website updated its page and a script stopped working
+labels: ["selectors", "good first issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Websites change their pages often. This is the most common reason a script breaks, and it is usually a one-line fix.
+        If you already know the fix, a pull request is even better.
+  - type: dropdown
+    id: site
+    attributes:
+      label: Which site?
+      options:
+        - ChatGPT
+        - Gemini
+        - A gallery site (Dribbble, Behance, ...)
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: step
+    attributes:
+      label: Which step failed?
+      description: The "step" value in the JSON line, for example "find input box"
+    validations:
+      required: true
+  - type: textarea
+    id: inspect
+    attributes:
+      label: Output of the inspect command
+      description: For image generation run `python3 scripts/generate_image.py --site <site> --inspect` and paste what it prints (remove anything private).
+      render: text
+  - type: textarea
+    id: fix
+    attributes:
+      label: Do you know the new selector?
+      description: Optional, but very helpful.
