@@ -1,0 +1,18 @@
+{
+  "basics": {"full_name": "", "first_name": "", "last_name": "", "email": "", "phone": "", "location": "", "pronouns": ""},
+  "links": {"github": "", "linkedin": "", "portfolio": "", "resume_path": ""},
+  "education": [{"school": "", "degree": "", "field": "", "start": "", "end": "", "grade": ""}],
+  "experience": [{"org": "", "role": "", "start": "", "end": "", "what_i_did": "", "stack": []}],
+  "projects": [{
+    "name": "", "one_line": "", "problem": "", "what_i_built": "", "stack": [], "my_role": "",
+    "outcome": "", "links": {"repo": "", "demo": ""},
+    "metrics": [{"text": "", "source": "where this number comes from"}]
+  }],
+  "skills": {"languages": [], "frameworks": [], "tools": []},
+  "clubs_and_activities": [{"name": "", "role": "", "what_i_did": ""}],
+  "achievements": [],
+  "availability": {"notice_period": "", "start_date": "", "work_authorization": "", "relocation": "", "preferred_roles": []},
+  "compensation": {"expected": "", "note": "never guess: ask the person every time"},
+  "about": {"why_hire_notes": "", "strengths": [], "weaknesses_and_growth": [], "career_goal": "", "interests": []},
+  "voice": {"samples": [], "notes": "how the person writes: short or long sentences, casual or formal, words they use"}
+}
