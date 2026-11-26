@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="t d">
+  <title id="t">explore-once</title>
+  <desc id="d">Claude explores a website once, compiles the path into a script, and Python replays it.</desc>
+  <rect width="1200" height="320" rx="20" fill="#1f1d1a"/>
+  <text x="60" y="108" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="64" font-weight="700" fill="#faf9f5">explore<tspan fill="#d97757">-</tspan>once</text>
+  <text x="62" y="156" font-family="system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="25" fill="#c9c4b8">Claude explores a site one time. Python replays it from then on.</text>
+  <g font-family="system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600">
+    <rect x="60" y="205" width="250" height="62" rx="31" fill="#d97757"/>
+    <text x="185" y="244" text-anchor="middle" fill="#1f1d1a">1  Explore with Claude</text>
+    <path d="M326 236 H366" stroke="#8a857a" stroke-width="3" stroke-linecap="round"/>
+    <path d="M358 228 L368 236 L358 244" fill="none" stroke="#8a857a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="384" y="205" width="250" height="62" rx="31" fill="none" stroke="#d97757" stroke-width="2.5"/>
+    <text x="509" y="244" text-anchor="middle" fill="#faf9f5">2  Compile to a script</text>
+    <path d="M650 236 H690" stroke="#8a857a" stroke-width="3" stroke-linecap="round"/>
+    <path d="M682 228 L692 236 L682 244" fill="none" stroke="#8a857a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="708" y="205" width="250" height="62" rx="31" fill="none" stroke="#d97757" stroke-width="2.5"/>
+    <text x="833" y="244" text-anchor="middle" fill="#faf9f5">3  Replay for free</text>
+  </g>
+  <text x="978" y="244" font-family="system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="20" fill="#8a857a">fix only what breaks</text>
+</svg>
