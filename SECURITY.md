@@ -18,7 +18,7 @@ Include what you found, how to reproduce it, and what you think the impact is. Y
 
 ## Design choices you should know about
 
-- Scripts use a **separate Chrome profile** at `~/.pro-skills/chrome-profile`, not your everyday one. Only sign in to accounts you are comfortable letting a local script act on.
+- Scripts use a **separate Chrome profile** at `~/.explore-once/chrome-profile`, not your everyday one. Only sign in to accounts you are comfortable letting a local script act on.
 - The debugging port binds to `127.0.0.1` only. Any program on your machine that can reach that port can control that Chrome, so treat it like a signed-in session left open.
 - The scripts never type passwords, card numbers or one-time codes, and never try to solve CAPTCHAs.
 - Form submission needs an approval code tied to the exact page and data.

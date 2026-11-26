@@ -10,7 +10,7 @@ re-explores the site and pays the tokens again. Check `flows.py list` FIRST.
   flows.py run NAME [-- script args]     # run it, record success/failure
   flows.py rm NAME
 
-Library location: $PRO_SKILLS_HOME/flows (default ~/.pro-skills/flows).
+Library location: $EXPLORE_ONCE_HOME/flows (default ~/.explore-once/flows).
 Exit code of `run` is the script's exit code (0/2/3/4, see flowkit.py).
 """
 from __future__ import annotations
@@ -24,7 +24,7 @@ import sys
 import time
 from pathlib import Path
 
-HOME = Path(os.environ.get("PRO_SKILLS_HOME", str(Path.home() / ".pro-skills")))
+HOME = Path(os.environ.get("EXPLORE_ONCE_HOME", str(Path.home() / ".explore-once")))
 LIB = HOME / "flows"
 MANIFEST = LIB / "manifest.json"
 

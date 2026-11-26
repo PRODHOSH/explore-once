@@ -1,13 +1,13 @@
 {
-  "name": "pro-skills",
-  "owner": { "name": "pro-skills contributors" },
+  "name": "explore-once",
+  "owner": { "name": "Prodhosh", "url": "https://github.com/PRODHOSH" },
   "plugins": [
     {
-      "name": "pro-skills",
+      "name": "explore-once",
       "source": "./",
-      "description": "Token-saving browser skills: script compiler, web image generation, gallery harvest.",
+      "description": "Explore a website once with Claude, then replay it as a script.",
       "version": "0.1.0",
-      "license": "MIT"
+      "license": "Apache-2.0"
     }
   ]
 }

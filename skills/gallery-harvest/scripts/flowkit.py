@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""flowkit - shared helpers for pro-skills browser flows.
+"""flowkit - shared helpers for explore-once browser flows.
 
 Canonical copy lives in shared/flowkit.py and is synced into every skill's
 scripts/ folder by tools/sync_shared.py (skills must stay self-contained).
@@ -34,10 +34,10 @@ from typing import Any, Callable, Dict, Iterator, Optional
 
 EXIT_OK, EXIT_SETUP, EXIT_STEP, EXIT_HUMAN = 0, 2, 3, 4
 
-HOME = Path(os.environ.get("PRO_SKILLS_HOME", str(Path.home() / ".pro-skills")))
+HOME = Path(os.environ.get("EXPLORE_ONCE_HOME", str(Path.home() / ".explore-once")))
 PROFILE_DIR = HOME / "chrome-profile"
 FAILURES_DIR = HOME / "failures"
-DEFAULT_PORT = int(os.environ.get("PRO_SKILLS_CDP_PORT", "9222"))
+DEFAULT_PORT = int(os.environ.get("EXPLORE_ONCE_CDP_PORT", "9222"))
 
 LOGIN_HINTS = ("login", "signin", "sign-in", "sign_in", "/auth", "accounts.google.com", "challenge", "captcha")
 

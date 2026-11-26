@@ -1,7 +1,10 @@
 {
-  "name": "pro-skills",
-  "description": "Token-saving browser skills for Claude: compile repeated browser tasks into scripts, generate images through your logged-in ChatGPT/Gemini, and review whole inspiration galleries from a few contact sheets.",
+  "name": "explore-once",
+  "description": "Explore a website once with Claude, then replay it as a script. Browser skills that cut token use: script compiler, image generation through your signed-in ChatGPT or Gemini, gallery harvest, approval-gated form filler, UI regression suite.",
   "version": "0.1.0",
-  "license": "MIT",
-  "keywords": ["browser-automation", "playwright", "token-efficiency", "image-generation", "web-scraping", "testing"]
+  "author": { "name": "Prodhosh", "url": "https://github.com/PRODHOSH" },
+  "homepage": "https://github.com/PRODHOSH/explore-once",
+  "repository": "https://github.com/PRODHOSH/explore-once",
+  "license": "Apache-2.0",
+  "keywords": ["browser-automation", "playwright", "token-efficiency", "claude-skills", "form-filling", "ui-testing", "image-generation"]
 }

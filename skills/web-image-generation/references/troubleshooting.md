@@ -1,7 +1,7 @@
 # Troubleshooting
 
 ## "Why not attach to my normal Chrome?"
-Chrome 136+ ignores `--remote-debugging-port` when the profile is the default one (a security hardening against cookie theft). The scripts therefore use a dedicated profile at `~/.pro-skills/chrome-profile` (override with `PRO_SKILLS_HOME`). Sign in once; it persists like any Chrome profile. It is a separate window from your daily Chrome; you can keep both open.
+Chrome 136+ ignores `--remote-debugging-port` when the profile is the default one (a security hardening against cookie theft). The scripts therefore use a dedicated profile at `~/.explore-once/chrome-profile` (override with `EXPLORE_ONCE_HOME`). Sign in once; it persists like any Chrome profile. It is a separate window from your daily Chrome; you can keep both open.
 
 ## Checklist
 | Symptom | Likely cause | Fix |
@@ -15,4 +15,4 @@ Chrome 136+ ignores `--remote-debugging-port` when the profile is the default on
 | wrong account | profile signed in as someone else | sign out/in inside the automation Chrome window |
 
 ## Port or profile in use
-`python3 scripts/flowkit.py status` shows whether the debugging port answers. `flowkit.py stop` quits the automation Chrome (macOS/Linux). Use `PRO_SKILLS_CDP_PORT` to change the port.
+`python3 scripts/flowkit.py status` shows whether the debugging port answers. `flowkit.py stop` quits the automation Chrome (macOS/Linux). Use `EXPLORE_ONCE_CDP_PORT` to change the port.

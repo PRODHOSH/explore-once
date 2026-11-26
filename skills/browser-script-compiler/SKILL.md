@@ -26,7 +26,7 @@ If a flow matches, run it (`flows.py run NAME -- --arg value`) and skip to **Han
 1. `python3 -m pip install playwright` (no browser download: scripts drive your own Chrome).
 2. Start the automation Chrome and log in to the sites you need, once:
    `python3 scripts/flowkit.py start https://the-site.example`
-   Sessions persist in `~/.pro-skills/chrome-profile`.
+   Sessions persist in `~/.explore-once/chrome-profile`.
 
 Why a separate Chrome instead of the everyday one: since Chrome 136 the debugging port is ignored for the default profile, so scripts cannot attach to it. The automation profile is a normal profile that you sign in to once. Never log it in to anything you would not want a script to be able to act on, because any local process that can reach the debugging port controls that browser (it binds to 127.0.0.1 only).
 
