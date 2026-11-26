@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check skills and shared files
+        run: python3 tools/validate.py
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: python3 -m pip install playwright pillow
+      - name: Run tests against local fixture pages
+        run: |
+          xvfb-run -a python3 tests/test_e2e.py
+          xvfb-run -a python3 tests/test_more.py
