@@ -1,6 +1,8 @@
 ---
 name: ui-regression-suite
 description: Build and run a UI regression suite for a website or web app that checks every page at desktop and mobile sizes for console errors, failed requests, broken images, horizontal overflow, missing content, accessibility basics and visual changes against baseline screenshots, and reports only the pages that need a human look. Use this skill whenever the user wants to test a site or web app, check that a change did not break the UI, do visual or responsive checks, run a pre-release or smoke test, catch regressions, or review "does everything still look right", even if they only say "test my site" and never mention screenshots or Playwright.
+license: Apache-2.0
+compatibility: Python 3.9+, Google Chrome, and `pip install playwright pillow`.
 ---
 
 # UI regression suite

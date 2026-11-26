@@ -1,6 +1,8 @@
 ---
 name: gallery-harvest
 description: Collect every image from an inspiration or gallery page (Dribbble, Behance, Pinterest-style grids, Awwwards, product listings, portfolios) with a Python script and give Claude a few numbered contact sheets instead of making it open and review each page or image one by one. Use this skill whenever the user shares a gallery, search-results or inspiration URL and wants Claude to review, compare, summarize or pull design ideas, trends, color palettes or patterns from many images, or says "go through all of these", "look at this whole page", "get me inspiration from", or "scrape the images", even if they do not ask for a script.
+license: Apache-2.0
+compatibility: Python 3.9+, Google Chrome, and `pip install playwright pillow`.
 ---
 
 # Gallery harvest

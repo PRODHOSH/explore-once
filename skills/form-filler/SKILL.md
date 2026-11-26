@@ -1,6 +1,8 @@
 ---
 name: form-filler
 description: Fill out web forms (job applications, registrations, vendor or tax portals, surveys, support and booking forms) from a JSON file in one scripted pass, then stop and show a review screenshot so the person approves before anything is submitted. Submission needs an approval code tied to the exact page and data. Use this skill whenever the user wants Claude to fill in, complete, apply to, or register on one or many web forms, reuse the same details across forms, or says "fill this out for me" or "apply to these", even if they do not mention scripts, and always when the form would send something on their behalf.
+license: Apache-2.0
+compatibility: Python 3.9+, Google Chrome, and `pip install playwright`.
 ---
 
 # Form filler

@@ -1,6 +1,8 @@
 ---
 name: web-image-generation
 description: Generate images by driving the user's already-logged-in ChatGPT or Gemini in Chrome with a Python script - sends the prompt, waits for the picture, downloads the file - so Claude (which cannot generate images itself) gets images without spending tokens on screenshots and clicking. Use this skill whenever the user asks Claude to make, draw, create or generate an image, logo, illustration, mockup, icon, hero image, thumbnail or concept art, wants several variations, or says to use ChatGPT, Gemini, DALL-E or Nano Banana for images, even if they do not mention scripts or the browser.
+license: Apache-2.0
+compatibility: Python 3.9+, Google Chrome signed in to ChatGPT or Gemini, and `pip install playwright`.
 ---
 
 # Web image generation

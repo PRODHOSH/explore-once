@@ -1,6 +1,8 @@
 ---
 name: browser-script-compiler
 description: Turn a browser task Claude has to repeat into a reusable Python (Playwright) script so later runs cost almost no tokens - explore the site once live, compile the working path into a script that drives your logged-in Chrome, replay it, and repair only the broken step when the site changes. Use this skill whenever the user wants to automate a repetitive or multi-step web task, run the same flow on many inputs or on a schedule, write or run browser/UI/end-to-end tests, save tokens on Claude-in-Chrome or Playwright-MCP work, or says things like "do this every time", "automate this", "this keeps taking so many tokens", "turn that into a script", "regression test this page", even if they never mention scripts or Playwright.
+license: Apache-2.0
+compatibility: Python 3.9+, Google Chrome, and `pip install playwright`. Works with Claude Code and any agent that can run shell commands.
 ---
 
 # Browser script compiler
