@@ -13,7 +13,10 @@ import argparse
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+_here = Path(__file__).resolve().parent
+# flowkit.py lives beside saved flows (flows.py add copies it), or in the skill's scripts/ folder
+for _p in (_here, _here.parent / "scripts"):
+    sys.path.insert(0, str(_p))
 from flowkit import emit, human, looks_like_login, session, step, wait_until  # noqa: E402
 
 

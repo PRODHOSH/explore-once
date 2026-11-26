@@ -71,6 +71,9 @@ def main() -> int:
         LIB.mkdir(parents=True, exist_ok=True)
         dest = f"{a.name}.py"
         shutil.copy2(src, LIB / dest)
+        kit = Path(__file__).with_name("flowkit.py")  # flows import it from their own folder
+        if kit.exists():
+            shutil.copy2(kit, LIB / "flowkit.py")
         data[a.name] = {**data.get(a.name, {}), "file": dest, "desc": a.desc, "params": a.params,
                         "created": data.get(a.name, {}).get("created", time.strftime("%Y-%m-%d")),
                         "updated": time.strftime("%Y-%m-%d")}

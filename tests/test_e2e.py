@@ -112,11 +112,11 @@ def main() -> int:
 
     # 4. flow library round trip
     flows = S / "browser-script-compiler/scripts/flows.py"
+    # use the skill's own synced copy of flows.py (it copies the flowkit sitting beside it)
     run([flows, "add", flow, "--name", "t", "--desc", "test flow", "--params", "url"])
     lst = run([flows, "list"]).stdout
     check("flows list shows flow", "test flow" in lst, lst)
-    # library copy needs flowkit beside it
-    lib = Path(ENV["PRO_SKILLS_HOME"]) / "flows"; (lib / "flowkit.py").write_bytes((ROOT / "shared/flowkit.py").read_bytes())
+    lib = Path(ENV["PRO_SKILLS_HOME"]) / "flows"  # flows.py add must bring flowkit.py along
     p = run([flows, "run", "t", "--", "--url", f"{base}/h1.html", "--out-dir", work / "o4", "--headless"])
     check("flows run executes and records ok", p.returncode == 0 and '"ok": 1' in (lib / "manifest.json").read_text(), p.stdout + p.stderr)
 
