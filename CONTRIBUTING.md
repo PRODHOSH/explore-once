@@ -13,21 +13,37 @@ Thanks for wanting to help. This project is a small set of Claude skills that mo
 
 You need Python 3.9 or newer and Google Chrome.
 
+Fork the repository on GitHub and get your fork onto your machine with your usual Git workflow. Then, from the project folder, make a virtual environment and install the two packages the scripts use:
+
 ```bash
-git clone <this repo>
-cd <this repo>
-python3 -m venv .venv && source .venv/bin/activate
-python3 -m pip install playwright pillow
+python3 -m venv .venv
+```
+
+```bash
+.venv/bin/python -m pip install playwright pillow
 ```
 
 ## Before you open a pull request
 
+Run these from the project folder. The first two need nothing but Python.
+
 ```bash
-python3 tools/sync_shared.py     # copies shared/flowkit.py into every skill
-python3 tools/validate.py        # checks SKILL.md rules, referenced files, drift
-python3 tests/test_e2e.py        # tests against local fake pages
-python3 tests/test_more.py
+python3 tools/sync_shared.py
 ```
+
+```bash
+python3 tools/validate.py
+```
+
+```bash
+.venv/bin/python tests/test_e2e.py
+```
+
+```bash
+.venv/bin/python tests/test_more.py
+```
+
+The first one copies `shared/flowkit.py` into every skill. The second checks the skill rules, referenced files and drift. The last two run against local fake pages.
 
 The tests use local fixture pages only. They never touch a real website or your real Chrome profile.
 
