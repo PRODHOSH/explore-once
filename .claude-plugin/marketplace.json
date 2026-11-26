@@ -1,0 +1,13 @@
+{
+  "name": "pro-skills",
+  "owner": { "name": "pro-skills contributors" },
+  "plugins": [
+    {
+      "name": "pro-skills",
+      "source": "./",
+      "description": "Token-saving browser skills: script compiler, web image generation, gallery harvest.",
+      "version": "0.1.0",
+      "license": "MIT"
+    }
+  ]
+}

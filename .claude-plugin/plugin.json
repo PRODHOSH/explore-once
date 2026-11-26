@@ -1,0 +1,7 @@
+{
+  "name": "pro-skills",
+  "description": "Token-saving browser skills for Claude: compile repeated browser tasks into scripts, generate images through your logged-in ChatGPT/Gemini, and review whole inspiration galleries from a few contact sheets.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "keywords": ["browser-automation", "playwright", "token-efficiency", "image-generation", "web-scraping", "testing"]
+}
