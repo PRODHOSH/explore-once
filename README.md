@@ -12,6 +12,8 @@
 
 Browser skills for Claude that move repetitive work out of the model and into Python scripts.
 
+> **Up to 98.7% fewer tokens on repeated work.** That is Anthropic's own measurement for moving work from step by step tool calls into code. On reviewing a gallery, explore-once cuts image tokens by about 84% (my estimate). [Numbers and sources](#token-savings)
+
 ## The problem
 
 When Claude drives a browser, it re-reads the page on every click. Do the same task five times and you pay for the same page reads five times. Some jobs Claude cannot do at all on its own, like making an image, so it ends up clicking through ChatGPT or Gemini one screenshot at a time.
@@ -30,21 +32,52 @@ Let Claude work out the task once. Save the working path as a short Python scrip
 | [`form-filler`](skills/form-filler) | Built for developers filling recruitment, internship and club forms. Remembers your real projects, writes answers in your voice, and never invents a number. Stops for your approval before anything is submitted. |
 | [`ui-regression-suite`](skills/ui-regression-suite) | Checks every page at desktop and mobile size for errors, broken images, overflow and visual changes, and shows Claude only what failed. |
 
-## The numbers
+## Token savings
 
-| | Measured or estimated | Result |
+| What | Number | Where it comes from |
 |---|---|---|
-| Automated checks, run on local test pages | Measured | 53 passing |
-| Reviewing an 80 shot gallery | Estimated | about 18k image tokens instead of about 109k (roughly 6x fewer) |
-| What a script run returns to Claude | Measured in test runs | one JSON line: 17 and 32 tokens for two sample runs, a few more with long file paths |
+| Doing the work in code instead of step by step tool calls, one worked example | **150,000 to 2,000 tokens, 98.7% fewer** | [Anthropic engineering, Nov 2025](https://www.anthropic.com/engineering/code-execution-with-mcp) |
+| Reviewing an 80 shot gallery with `gallery-harvest` | **about 84% fewer image tokens** (about 18k instead of 109k) | My estimate, method below |
+| What a script run sends back to Claude | **17 and 32 tokens** in two sample runs | Measured in this repo's tests |
+| Stagehand v4 against plain Playwright | "2x faster and 80% more token efficient" | [Browserbase](https://browserbase.com/blog/evolving-computer-use-with-code), vendor claim, no method given |
+| One 7 step form flow through Playwright MCP | about 114,000 tokens | [Reported second hand](https://dev.to/leonting1010/playwright-mcp-burns-114k-tokens-for-one-workflow-heres-why-and-what-to-do-about-it-57k8), older version |
 
-The gallery estimate uses image tokens of about width x height / 750. Eighty separate 1280x800 screenshots come to about 109k. Five contact sheets plus five full size originals come to about 18k. Your pages will differ, so measure your own tasks. Nothing here has been benchmarked against live sites yet.
+Read these with care:
+
+- The 98.7% is one example in Anthropic's post (a Google Drive to Salesforce workflow), not a promise for every task. Your savings depend on how much page data a task would otherwise pull through Claude.
+- The 114,000 figure is from an older Playwright MCP. A later [re-test](https://dev.to/aswani25/playwright-cli-vs-playwright-mcp-which-should-you-use-with-claude-code-1olh) found newer versions much closer to the CLI, so do not expect that gap today.
+- The first run costs about what a normal run costs, because Claude still explores the site. The savings start from the second run.
+- Gallery estimate: image tokens are about width x height / 750. Eighty separate 1280x800 screenshots come to about 109k. Five contact sheets plus five full size originals come to about 18k.
+- Not yet benchmarked on live sites. Measure your own tasks.
+
+Also checked: 53 automated tests pass on local test pages.
 
 ## Quick start
+
+Install with the [skills.sh](https://www.skills.sh/) CLI (needs Node 22.20 or newer):
+
+```bash
+npx skills add PRODHOSH/explore-once
+```
+
+Want just one skill, for Claude Code?
+
+```bash
+npx skills add PRODHOSH/explore-once --skill form-filler -a claude-code
+```
+
+`--list` shows what is inside, and `-g` installs globally. Installs are counted anonymously, which is how repos show up on the skills.sh leaderboard.
+
+Or install it as a Claude Code plugin:
 
 ```bash
 /plugin marketplace add PRODHOSH/explore-once
 /plugin install explore-once@explore-once
+```
+
+Then add the Python packages the scripts use:
+
+```bash
 python3 -m pip install playwright pillow
 ```
 
