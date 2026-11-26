@@ -1,13 +1,11 @@
 {
   "name": "explore-once",
-  "owner": { "name": "Prodhosh", "url": "https://github.com/PRODHOSH" },
+  "owner": { "name": "Prodhosh" },
   "plugins": [
     {
       "name": "explore-once",
       "source": "./",
-      "description": "Explore a website once with Claude, then replay it as a script.",
-      "version": "0.1.0",
-      "license": "Apache-2.0"
+      "description": "Explore a website once with Claude, then replay it as a script."
     }
   ]
 }

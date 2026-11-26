@@ -6,5 +6,6 @@
   "homepage": "https://github.com/PRODHOSH/explore-once",
   "repository": "https://github.com/PRODHOSH/explore-once",
   "license": "Apache-2.0",
+  "icon": "./.claude-plugin/icon.png",
   "keywords": ["browser-automation", "playwright", "token-efficiency", "claude-skills", "form-filling", "ui-testing", "image-generation"]
 }
